@@ -1,0 +1,6 @@
+fastapi==0.132.0
+uvicorn==0.41.0
+python-multipart==0.0.22
+anthropic==0.83.0
+python-dotenv==1.2.1
+docling==2.74.0
