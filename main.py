@@ -4,7 +4,8 @@ import anthropic
 import tempfile
 import os
 from dotenv import load_dotenv
-from docling.document_converter import DocumentConverter
+from pypdf import PdfReader
+import io
 
 load_dotenv()
 
@@ -18,7 +19,6 @@ app.add_middleware(
 )
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-converter = DocumentConverter()
 
 @app.get("/")
 def health_check():
@@ -34,13 +34,10 @@ async def roast_resume(file: UploadFile = File(...)):
     if len(contents) > 2 * 1024 * 1024:
         return {"error": "2MB se bada resume?! Novel likh de bhai!"}
     
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        tmp.write(contents)
-        tmp_path = tmp.name
-
-    result = converter.convert(tmp_path)
-    resume_text = result.document.export_to_markdown()
-    os.unlink(tmp_path)
+    reader = PdfReader(io.BytesIO(contents))
+    resume_text = ""
+    for page in reader.pages:
+        resume_text += page.extract_text()
 
     message = client.messages.create(
         model="claude-sonnet-4-6",
