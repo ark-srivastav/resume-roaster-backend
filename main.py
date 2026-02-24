@@ -13,10 +13,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["https://roaster.ark-srivastav.net"],
+    allow_methods=["POST", "GET"],
     allow_headers=["*"],
 )
+
 
 client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
